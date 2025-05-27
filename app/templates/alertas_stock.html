@@ -4,22 +4,36 @@
 
 {% block content %}
 <div class="container-fluid mt-4">
-  <h2 class="mb-4 text-danger">
-    <i class="fas fa-exclamation-triangle"></i> Productos con Stock Bajo o Cercano al Mínimo
+  <h2 class="mb-4 text-danger" id="titulo-alerta">
+    <i class="fas fa-exclamation-triangle" aria-hidden="true"></i> Productos con Stock Bajo o Cercano al Mínimo
   </h2>
+
+  {# Mensajes flash si existen #}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, msg in messages %}
+        <div class="alert alert-{{ 'info' if category == 'message' else category }} alert-dismissible fade show" role="alert">
+          {{ msg }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
 
   {% if productos %}
     <div class="card shadow-sm">
       <div class="card-body table-responsive">
-        <table class="table table-bordered table-striped table-hover mb-0">
+        <table class="table table-bordered table-striped table-hover mb-0" aria-describedby="titulo-alerta">
           <thead class="thead-dark">
             <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Categoría</th>
-              <th>Stock actual</th>
-              <th>Stock mínimo</th>
-              <th>Alerta</th>
+              <th scope="col">ID</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Categoría</th>
+              <th scope="col">Stock actual</th>
+              <th scope="col">Stock mínimo</th>
+              <th scope="col">Alerta</th>
             </tr>
           </thead>
           <tbody>
@@ -46,11 +60,17 @@
               <td>{{ p.stock_minimo }}</td>
               <td>
                 {% if p.stock == 0 %}
-                  <span class="text-danger"><i class="fas fa-times-circle"></i> Sin stock</span>
+                  <span class="text-danger" title="Sin stock">
+                    <i class="fas fa-times-circle" aria-hidden="true"></i> Sin stock
+                  </span>
                 {% elif diferencia <= 2 and diferencia > 0 %}
-                  <span class="text-warning"><i class="fas fa-exclamation-triangle"></i> Cerca del mínimo</span>
+                  <span class="text-warning" title="Cerca del mínimo">
+                    <i class="fas fa-exclamation-triangle" aria-hidden="true"></i> Cerca del mínimo
+                  </span>
                 {% else %}
-                  <span class="text-success"><i class="fas fa-check-circle"></i> OK</span>
+                  <span class="text-success" title="Stock suficiente">
+                    <i class="fas fa-check-circle" aria-hidden="true"></i> OK
+                  </span>
                 {% endif %}
               </td>
             </tr>
@@ -66,7 +86,7 @@
   {% endif %}
 
   <div class="text-right mt-4">
-    <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">
+    <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary" aria-label="Volver al panel principal">
       <i class="fas fa-arrow-left"></i> Volver al panel
     </a>
   </div>

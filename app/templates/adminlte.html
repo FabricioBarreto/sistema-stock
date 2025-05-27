@@ -10,12 +10,18 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='adminlte/dist/css/adminlte.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
 
+  {% block styles %}{% endblock %}
+
   <style>
     .content-wrapper {
       margin-left: 0 !important;  /* eliminar espacio reservado del sidebar */
+      min-height: calc(100vh - 60px - 40px); /* header y footer */
     }
     .main-footer {
       background-color: #f4f6f9;
+      position: sticky;
+      bottom: 0;
+      width: 100%;
     }
     .navbar {
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
@@ -30,14 +36,14 @@
 <div class="wrapper">
 
   <!-- NAVBAR -->
-  <nav class="main-header navbar navbar-expand-md navbar-light bg-white">
+  <nav class="main-header navbar navbar-expand-md navbar-light bg-white" aria-label="Menú principal">
     <div class="container">
       <a href="{{ url_for('main.dashboard') }}" class="navbar-brand">
-        <i class="fas fa-toolbox text-primary"></i>
+        <i class="fas fa-toolbox text-primary" aria-hidden="true"></i>
         <span class="brand-text font-weight-light">Inventario Ferretería</span>
       </a>
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Mostrar menú">
         <span class="navbar-toggler-icon"></span>
       </button>
 
@@ -45,11 +51,16 @@
         <ul class="navbar-nav ms-auto">
           {% if current_user.is_authenticated %}
             <li class="nav-item">
+              <span class="nav-link text-primary">
+                <i class="fas fa-user" aria-hidden="true"></i> {{ current_user.nombre }}
+              </span>
+            </li>
+            <li class="nav-item">
               <a href="{{ url_for('main.dashboard') }}" class="nav-link">Dashboard</a>
             </li>
             <li class="nav-item">
               <a href="{{ url_for('main.logout') }}" class="nav-link text-danger">
-                <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Cerrar sesión
               </a>
             </li>
           {% endif %}
@@ -63,13 +74,17 @@
     <div class="content pt-4">
       <div class="container">
 
-        {% with messages = get_flashed_messages() %}
+        {# Mensajes flash con categorías para mejor UX #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
-            <div class="alert alert-info">
-              {% for msg in messages %}
-                <p>{{ msg }}</p>
-              {% endfor %}
-            </div>
+            {% for category, msg in messages %}
+              <div class="alert alert-{{ 'info' if category == 'message' else category }} alert-dismissible fade show" role="alert">
+                {{ msg }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            {% endfor %}
           {% endif %}
         {% endwith %}
 

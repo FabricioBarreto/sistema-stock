@@ -11,54 +11,68 @@
 </div>
 
 <div class="container-fluid">
-  <div class="row g-4">
+  {# Mensajes flash si existen #}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, msg in messages %}
+        <div class="alert alert-{{ 'info' if category == 'message' else category }} alert-dismissible fade show" role="alert">
+          {{ msg }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
 
+  <div class="row g-4">
     {% if usuario.rol == 'admin' %}
       {% set admin_cards = [
         ('Gestión', [
-          ('main.registrar_usuario', '👥 Registrar nuevo usuario', 'primary', 'user-plus'),
-          ('main.productos', '📦 Gestionar productos', 'secondary', 'boxes'),
-          ('main.buscar_productos', '🔍 Buscar productos', 'dark', 'search'),
-          ('main.alertas_stock', '🚨 Alertas de stock', 'danger', 'exclamation-triangle'),
-          ('main.mi_perfil', '👤 Mi perfil', 'outline-primary', 'user')
+          ('main.registrar_usuario', '👥 Registrar nuevo usuario', 'primary', 'user-plus', 'Registrar un nuevo usuario en el sistema'),
+          ('main.productos', '📦 Gestionar productos', 'secondary', 'boxes', 'Ver y administrar productos'),
+          ('main.buscar_productos', '🔍 Buscar productos', 'dark', 'search', 'Buscar productos en inventario'),
+          ('main.alertas_stock', '🚨 Alertas de stock', 'danger', 'exclamation-triangle', 'Ver productos con stock bajo'),
+          ('main.mi_perfil', '👤 Mi perfil', 'outline-primary', 'user', 'Ver y editar mi perfil')
         ]),
         ('Ventas', [
-          ('main.registrar_venta', '🛒 Registrar venta', 'success', 'shopping-cart'),
-          ('main.ventas', '📋 Historial de ventas', 'dark', 'receipt'),
-          ('main.ventas_por_fecha', '📆 Reporte por fechas', 'warning', 'calendar-day'),
-          ('main.reporte_general', '📊 Gráfico de ventas', 'info', 'chart-bar')
+          ('main.registrar_venta', '🛒 Registrar venta', 'success', 'shopping-cart', 'Registrar una nueva venta'),
+          ('main.ventas', '📋 Historial de ventas', 'dark', 'receipt', 'Ver historial de ventas'),
+          ('main.ventas_por_fecha', '📆 Reporte por fechas', 'warning', 'calendar-day', 'Reporte de ventas por fechas'),
+          ('main.reporte_general', '📊 Gráfico de ventas', 'info', 'chart-bar', 'Ver gráficos y estadísticas')
         ]),
         ('Usuarios y reportes', [
-          ('main.listar_usuarios', '📋 Ver usuarios', 'outline-primary', 'users'),
-          ('main.ventas_por_usuario', '📈 Ventas por usuario', 'outline-info', 'chart-pie'),
-          ('main.ventas_por_usuario_pdf', '📄 Exportar informe PDF', 'outline-secondary', 'file-pdf')
+          ('main.listar_usuarios', '📋 Ver usuarios', 'outline-primary', 'users', 'Ver todos los usuarios'),
+          ('main.ventas_por_usuario', '📈 Ventas por usuario', 'outline-info', 'chart-pie', 'Reporte de ventas por usuario'),
+          ('main.ventas_por_usuario_pdf', '📄 Exportar informe PDF', 'outline-secondary', 'file-pdf', 'Descargar informe de ventas por usuario')
         ]),
         ('Compras', [
-          ('main.registrar_compra', '➕ Registrar compra', 'success', 'truck-loading')
+          ('main.registrar_compra', '➕ Registrar compra', 'success', 'truck-loading', 'Registrar una compra de productos')
         ])
       ] %}
     {% elif usuario.rol == 'vendedor' %}
       {% set admin_cards = [
         ('Acciones', [
-          ('main.registrar_venta', '🛒 Registrar venta', 'success', 'shopping-cart'),
-          ('main.buscar_productos', '🔍 Buscar productos', 'secondary', 'search'),
-          ('main.mis_ventas', '📋 Mis ventas', 'dark', 'clipboard-list'),
-          ('main.alertas_stock', '🚨 Stock bajo', 'danger', 'exclamation-circle'),
-          ('main.mi_perfil', '👤 Mi perfil', 'outline-primary', 'user')
+          ('main.registrar_venta', '🛒 Registrar venta', 'success', 'shopping-cart', 'Registrar una nueva venta'),
+          ('main.buscar_productos', '🔍 Buscar productos', 'secondary', 'search', 'Buscar productos en inventario'),
+          ('main.mis_ventas', '📋 Mis ventas', 'dark', 'clipboard-list', 'Ver mis ventas'),
+          ('main.alertas_stock', '🚨 Stock bajo', 'danger', 'exclamation-circle', 'Ver productos con stock bajo'),
+          ('main.mi_perfil', '👤 Mi perfil', 'outline-primary', 'user', 'Ver y editar mi perfil')
         ])
       ] %}
     {% endif %}
 
     {% for titulo, items in admin_cards %}
-    <div class="col-md-6 col-xl-4">
-      <div class="card shadow-sm">
+    <div class="col-md-6 col-xl-4 mb-4">
+      <div class="card shadow-sm h-100">
         <div class="card-header bg-light">
           <h5 class="card-title mb-0">{{ titulo }}</h5>
         </div>
         <div class="card-body">
-          {% for url, texto, color, icon in items %}
-            <a href="{{ url_for(url) }}" class="btn btn-{{ color }} btn-block mb-2 text-left">
-              <i class="fas fa-{{ icon }} mr-2"></i> {{ texto }}
+          {% for url, texto, color, icon, tooltip in items %}
+            <a href="{{ url_for(url) }}" class="btn btn-{{ color }} btn-block mb-2 text-left"
+               data-toggle="tooltip" data-placement="right" title="{{ tooltip }}">
+              <i class="fas fa-{{ icon }} mr-2" aria-hidden="true"></i> {{ texto }}
             </a>
           {% endfor %}
         </div>
@@ -67,11 +81,18 @@
     {% endfor %}
 
     <div class="col-md-12">
-      <a href="{{ url_for('main.logout') }}" class="btn btn-outline-danger btn-block mt-3">
+      <a href="{{ url_for('main.logout') }}" class="btn btn-outline-danger btn-block mt-3" aria-label="Cerrar sesión">
         <i class="fas fa-sign-out-alt"></i> Cerrar sesión
       </a>
     </div>
-
   </div>
 </div>
+
+{% block scripts %}
+<script>
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+{% endblock %}
 {% endblock %}

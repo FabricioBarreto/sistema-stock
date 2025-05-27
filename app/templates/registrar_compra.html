@@ -11,13 +11,35 @@
 
 <section class="content">
   <div class="container-fluid">
-    <form method="POST" class="card card-body bg-light shadow-sm">
+
+    {# Mensajes flash si existen #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, msg in messages %}
+          <div class="alert alert-{{ 'info' if category == 'message' else category }} alert-dismissible fade show" role="alert">
+            {{ msg }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" class="card card-body bg-light shadow-sm" autocomplete="off">
+      {# Protección CSRF si usas Flask-WTF #}
+      {% if csrf_token %}{{ csrf_token() }}{% endif %}
+
       <!-- Selección del producto -->
       <div class="form-group">
         <label for="producto_id"><i class="fas fa-box"></i> Producto:</label>
         <select name="producto_id" id="producto_id" class="form-control" required onchange="mostrarPrecio()">
           {% for p in productos %}
-            <option value="{{ p.id }}" data-precio="{{ p.precio }}">{{ p.nombre }} (Stock actual: {{ p.stock }})</option>
+            <option value="{{ p.id }}"
+              data-precio="{{ p.precio }}"
+              {% if request.form.producto_id == p.id|string %}selected{% endif %}>
+              {{ p.nombre }} (Stock actual: {{ p.stock }})
+            </option>
           {% endfor %}
         </select>
       </div>
@@ -31,21 +53,23 @@
       <!-- Precio unitario ingresado -->
       <div class="form-group">
         <label for="precio_unitario"><i class="fas fa-dollar-sign"></i> Precio unitario (de compra):</label>
-        <input type="number" name="precio_unitario" id="precio_unitario" class="form-control" step="0.01" min="0" required>
+        <input type="number" name="precio_unitario" id="precio_unitario" class="form-control" step="0.01" min="0" required
+               value="{{ request.form.precio_unitario or '' }}">
       </div>
 
       <!-- Cantidad -->
       <div class="form-group">
         <label for="cantidad"><i class="fas fa-sort-numeric-up"></i> Cantidad comprada:</label>
-        <input type="number" name="cantidad" id="cantidad" class="form-control" min="1" required>
+        <input type="number" name="cantidad" id="cantidad" class="form-control" min="1" required
+               value="{{ request.form.cantidad or '' }}">
       </div>
 
       <!-- Botones -->
-      <div class="mt-3">
+      <div class="mt-3 d-flex justify-content-between flex-wrap gap-2">
         <button type="submit" class="btn btn-success">
           <i class="fas fa-save"></i> Registrar compra
         </button>
-        <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary" aria-label="Volver al panel">
           <i class="fas fa-arrow-left"></i> Volver
         </a>
       </div>
@@ -68,5 +92,3 @@
   });
 </script>
 {% endblock %}
-
-

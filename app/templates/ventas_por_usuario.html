@@ -29,8 +29,19 @@
               <td>{{ fila.cantidad_ventas }}</td>
               <td><strong>${{ '%.2f'|format(fila.total_ventas or 0) }}</strong></td>
             </tr>
+            {% else %}
+            <tr>
+              <td colspan="3">No hay datos para mostrar.</td>
+            </tr>
             {% endfor %}
           </tbody>
+          <tfoot>
+            <tr class="table-warning">
+              <td><strong>Totales generales</strong></td>
+              <td><strong>{{ total_ventas }}</strong></td>
+              <td><strong>${{ '%.2f'|format(total_monto) }}</strong></td>
+            </tr>
+          </tfoot>
         </table>
       </div>
     </div>

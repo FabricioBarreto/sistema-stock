@@ -10,57 +10,99 @@
       font-size: 13px;
       color: #000;
     }
-
-    h2 {
+    .empresa {
       text-align: center;
-      margin-bottom: 25px;
+      margin-bottom: 10px;
+    }
+    .empresa strong {
+      font-size: 18px;
       text-transform: uppercase;
     }
-
-    .info {
-      margin-bottom: 20px;
+    .empresa span {
+      font-size: 12px;
+      color: #555;
     }
-
+    h2 {
+      text-align: center;
+      margin-bottom: 18px;
+      text-transform: uppercase;
+      font-size: 20px;
+      letter-spacing: 1px;
+    }
+    .info {
+      margin-bottom: 18px;
+      border: 1px solid #ddd;
+      padding: 10px 15px;
+      border-radius: 4px;
+      background: #fafafa;
+      width: 100%;
+      box-sizing: border-box;
+    }
     .info p {
       margin: 4px 0;
+      font-size: 13px;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 15px;
+      font-size: 13px;
     }
-
     th, td {
       border: 1px solid #444;
       padding: 6px 8px;
       text-align: center;
     }
-
     th {
       background-color: #f2f2f2;
     }
-
     tr.total-row {
       background-color: #e9e9e9;
       font-weight: bold;
     }
-
+    .totales {
+      margin-top: 10px;
+      width: 100%;
+      text-align: right;
+    }
+    .totales td {
+      border: none;
+      font-size: 14px;
+      padding: 4px 8px;
+    }
+    .firma {
+      margin-top: 40px;
+      text-align: right;
+      font-size: 13px;
+    }
     .footer {
       text-align: center;
       margin-top: 30px;
       font-size: 12px;
       color: #555;
     }
+    .logo {
+      width: 60px;
+      height: 60px;
+      margin-bottom: 5px;
+    }
   </style>
 </head>
 <body>
 
+  <div class="empresa">
+    <!-- Se puede reemplazar el logo por una imagen real si lo deseas -->
+    <!-- <img src="{{ url_for('static', filename='logo.png') }}" class="logo" alt="Logo"> -->
+    <strong>Ferretería Ejemplo S.A.</strong><br>
+    <span>RUC: 1234567890 &nbsp;|&nbsp; Calle Principal 123, Ciudad &nbsp;|&nbsp; Tel: (099) 123-4567</span>
+  </div>
+
   <h2>Factura de Venta #{{ venta.id }}</h2>
 
   <div class="info">
-    <p><strong>📅 Fecha:</strong> {{ venta.fecha.strftime('%Y-%m-%d %H:%M') }}</p>
-    <p><strong>👤 Vendedor:</strong> {{ vendedor.nombre }}</p>
+    <p><strong>Fecha:</strong> {{ venta.fecha.strftime('%Y-%m-%d %H:%M') }}</p>
+    <p><strong>Vendedor:</strong> {{ vendedor.nombre }}</p>
+    <p><strong>Cliente:</strong> ____________________________</p>
   </div>
 
   <table>
@@ -88,8 +130,24 @@
     </tbody>
   </table>
 
+  <table class="totales">
+    <tr>
+      <td><strong>Forma de pago:</strong></td>
+      <td>Efectivo</td>
+    </tr>
+    <tr>
+      <td><strong>Observaciones:</strong></td>
+      <td>__________________________________________</td>
+    </tr>
+  </table>
+
+  <div class="firma">
+    <p>Firma y sello:</p>
+    <p>______________________________</p>
+  </div>
+
   <div class="footer">
-    <p>Gracias por su compra.</p>
+    <p>Gracias por su compra. <br>Para reclamos o devoluciones, conserve esta factura.</p>
   </div>
 
 </body>

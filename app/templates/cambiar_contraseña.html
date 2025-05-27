@@ -12,35 +12,40 @@
         </div>
 
         <div class="card-body">
-          <!-- Flash messages -->
-          {% with messages = get_flashed_messages() %}
+          <!-- Mensajes flash con categorías -->
+          {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-              <div class="alert alert-info">
-                {% for msg in messages %}
-                  <p>{{ msg }}</p>
-                {% endfor %}
-              </div>
+              {% for category, msg in messages %}
+                <div class="alert alert-{{ 'info' if category == 'message' else category }} alert-dismissible fade show" role="alert">
+                  {{ msg }}
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+              {% endfor %}
             {% endif %}
           {% endwith %}
 
-          <form method="POST">
+          <form method="POST" autocomplete="off">
+            {# Protección CSRF si usas Flask-WTF #}
+            {% if csrf_token %}{{ csrf_token() }}{% endif %}
             <div class="form-group">
               <label for="actual">Contraseña actual</label>
-              <input type="password" id="actual" name="actual" class="form-control" placeholder="Ingresa tu contraseña actual" required>
+              <input type="password" id="actual" name="actual" class="form-control" placeholder="Ingresa tu contraseña actual" required autocomplete="current-password">
             </div>
 
             <div class="form-group">
               <label for="nueva">Nueva contraseña</label>
-              <input type="password" id="nueva" name="nueva" class="form-control" placeholder="Nueva contraseña segura" required>
+              <input type="password" id="nueva" name="nueva" class="form-control" placeholder="Nueva contraseña segura" required autocomplete="new-password">
             </div>
 
             <div class="form-group">
               <label for="confirmar">Confirmar nueva contraseña</label>
-              <input type="password" id="confirmar" name="confirmar" class="form-control" placeholder="Confirma la nueva contraseña" required>
+              <input type="password" id="confirmar" name="confirmar" class="form-control" placeholder="Confirma la nueva contraseña" required autocomplete="new-password">
             </div>
 
             <div class="d-flex justify-content-between mt-4">
-              <a href="{{ url_for('main.mi_perfil') }}" class="btn btn-secondary">
+              <a href="{{ url_for('main.mi_perfil') }}" class="btn btn-secondary" aria-label="Cancelar y volver al perfil">
                 <i class="fas fa-arrow-left"></i> Cancelar
               </a>
               <button type="submit" class="btn btn-success">
@@ -54,4 +59,3 @@
   </div>
 </div>
 {% endblock %}
-

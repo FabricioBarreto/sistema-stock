@@ -6,8 +6,22 @@
 <div class="container-fluid mt-4">
   <h2 class="mb-4 text-primary"><i class="fas fa-search"></i> Buscar productos</h2>
 
+  {# Mensajes flash si existen #}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, msg in messages %}
+        <div class="alert alert-{{ 'info' if category == 'message' else category }} alert-dismissible fade show" role="alert">
+          {{ msg }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
   <!-- Formulario de búsqueda -->
-  <form method="GET" class="card card-body shadow-sm mb-4">
+  <form method="GET" class="card card-body shadow-sm mb-4" autocomplete="off" aria-label="Formulario de búsqueda de productos">
     <div class="row">
       <div class="col-md-6 mb-3">
         <label for="nombre">Nombre del producto</label>
@@ -27,7 +41,7 @@
       </div>
 
       <div class="col-md-2 mb-3 d-flex align-items-end">
-        <button type="submit" class="btn btn-primary w-100">
+        <button type="submit" class="btn btn-primary w-100" aria-label="Buscar productos">
           <i class="fas fa-search"></i> Buscar
         </button>
       </div>
@@ -38,13 +52,13 @@
   {% if productos %}
     <div class="card shadow-sm">
       <div class="card-body table-responsive p-0">
-        <table class="table table-hover table-striped table-bordered mb-0">
+        <table class="table table-hover table-striped table-bordered mb-0" aria-label="Resultados de productos">
           <thead class="thead-dark">
             <tr>
-              <th>Nombre</th>
-              <th>Categoría</th>
-              <th>Precio</th>
-              <th>Stock</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Categoría</th>
+              <th scope="col">Precio</th>
+              <th scope="col">Stock</th>
             </tr>
           </thead>
           <tbody>
@@ -54,10 +68,12 @@
               <td>{{ p.categoria.nombre }}</td>
               <td>${{ '%.2f'|format(p.precio) }}</td>
               <td>
-                {% if p.stock <= p.stock_minimo %}
-                  <span class="badge badge-danger">{{ p.stock }}</span>
+                {% if p.stock == 0 %}
+                  <span class="badge badge-danger" title="Sin stock">{{ p.stock }}</span>
+                {% elif p.stock <= p.stock_minimo %}
+                  <span class="badge badge-warning" title="Stock bajo">{{ p.stock }}</span>
                 {% else %}
-                  <span class="badge badge-success">{{ p.stock }}</span>
+                  <span class="badge badge-success" title="Stock suficiente">{{ p.stock }}</span>
                 {% endif %}
               </td>
             </tr>
@@ -67,13 +83,13 @@
       </div>
     </div>
   {% else %}
-    <div class="alert alert-warning mt-3">
-      ⚠ No se encontraron productos que coincidan con la búsqueda.
+    <div class="alert alert-warning mt-3" role="alert">
+      <i class="fas fa-exclamation-circle"></i> No se encontraron productos que coincidan con la búsqueda.
     </div>
   {% endif %}
 
   <div class="mt-4 text-right">
-    <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">
+    <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary" aria-label="Volver al panel principal">
       <i class="fas fa-arrow-left"></i> Volver al panel
     </a>
   </div>

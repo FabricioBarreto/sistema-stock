@@ -13,17 +13,38 @@
   <div class="container-fluid">
     <div class="card shadow-sm">
       <div class="card-body">
-        <form method="POST">
+
+        {# Mensajes flash si existen #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, msg in messages %}
+              <div class="alert alert-{{ 'info' if category == 'message' else category }} alert-dismissible fade show" role="alert">
+                {{ msg }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST" autocomplete="off">
+          {# Protección CSRF si usas Flask-WTF #}
+          {% if csrf_token %}{{ csrf_token() }}{% endif %}
           <div class="form-group">
             <label for="nombre"><i class="fas fa-box"></i> Nombre del producto</label>
-            <input name="nombre" id="nombre" value="{{ producto.nombre }}" class="form-control" required>
+            <input name="nombre" id="nombre" class="form-control" required
+                   value="{{ request.form.nombre or producto.nombre }}">
           </div>
 
           <div class="form-group">
             <label for="categoria"><i class="fas fa-tags"></i> Categoría</label>
             <select name="categoria_id" id="categoria" class="form-control" required>
               {% for c in categorias %}
-                <option value="{{ c.id }}" {% if producto.categoria_id == c.id %}selected{% endif %}>{{ c.nombre }}</option>
+                <option value="{{ c.id }}"
+                  {% if (request.form.categoria_id and request.form.categoria_id == c.id|string) or (not request.form.categoria_id and producto.categoria_id == c.id) %}selected{% endif %}>
+                  {{ c.nombre }}
+                </option>
               {% endfor %}
             </select>
           </div>
@@ -31,17 +52,20 @@
           <div class="form-row">
             <div class="form-group col-md-4">
               <label for="precio"><i class="fas fa-dollar-sign"></i> Precio ($)</label>
-              <input type="number" step="0.01" name="precio" id="precio" value="{{ producto.precio }}" class="form-control" required>
+              <input type="number" step="0.01" min="0" name="precio" id="precio" class="form-control" required
+                     value="{{ request.form.precio or producto.precio }}">
             </div>
 
             <div class="form-group col-md-4">
               <label for="stock"><i class="fas fa-boxes"></i> Stock actual</label>
-              <input type="number" name="stock" id="stock" value="{{ producto.stock }}" class="form-control" required>
+              <input type="number" min="0" name="stock" id="stock" class="form-control" required
+                     value="{{ request.form.stock or producto.stock }}">
             </div>
 
             <div class="form-group col-md-4">
               <label for="stock_minimo"><i class="fas fa-exclamation-circle"></i> Stock mínimo</label>
-              <input type="number" name="stock_minimo" id="stock_minimo" value="{{ producto.stock_minimo }}" class="form-control" required>
+              <input type="number" min="0" name="stock_minimo" id="stock_minimo" class="form-control" required
+                     value="{{ request.form.stock_minimo or producto.stock_minimo }}">
             </div>
           </div>
 
@@ -49,7 +73,7 @@
             <button type="submit" class="btn btn-success">
               <i class="fas fa-save"></i> Actualizar producto
             </button>
-            <a href="{{ url_for('main.productos') }}" class="btn btn-secondary">
+            <a href="{{ url_for('main.productos') }}" class="btn btn-secondary" aria-label="Cancelar y volver a productos">
               <i class="fas fa-times"></i> Cancelar
             </a>
           </div>
@@ -59,4 +83,3 @@
   </div>
 </section>
 {% endblock %}
-

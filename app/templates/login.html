@@ -17,7 +17,6 @@
       align-items: center;
       justify-content: center;
     }
-
     .login-container {
       max-width: 900px;
       width: 100%;
@@ -28,61 +27,75 @@
       display: flex;
       flex-direction: row;
     }
-
     .login-image {
       background: url('{{ url_for("static", filename="img/login-bg.jpg") }}') no-repeat center center;
       background-size: cover;
       width: 50%;
       display: none;
     }
-
     .login-form {
       padding: 40px;
       width: 100%;
     }
-
     @media (min-width: 768px) {
       .login-image {
         display: block;
       }
-
       .login-form {
         width: 50%;
       }
+    }
+    .show-password {
+      cursor: pointer;
+      color: #888;
     }
   </style>
 </head>
 <body>
 
-<div class="login-container">
-  <div class="login-image"></div>
-
+<div class="login-container" role="main" aria-label="Formulario de inicio de sesión">
+  <div class="login-image" aria-hidden="true"></div>
   <div class="login-form">
     <h4 class="text-center mb-4"><i class="fas fa-lock text-primary"></i> FerreteríaApp</h4>
     <p class="text-center text-muted">Inicia sesión para continuar</p>
 
-    {% with messages = get_flashed_messages() %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        <div class="alert alert-danger">
-          {% for msg in messages %}
-            <p>{{ msg }}</p>
-          {% endfor %}
-        </div>
+        {% for category, msg in messages %}
+          <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+            {{ msg }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        {% endfor %}
       {% endif %}
     {% endwith %}
 
-    <form method="POST">
-      <div class="input-group mb-3">
-        <input type="email" name="correo" class="form-control" placeholder="Correo electrónico" required>
-        <div class="input-group-append">
-          <div class="input-group-text"><span class="fas fa-envelope"></span></div>
+    <form method="POST" autocomplete="off">
+      {% if csrf_token %}{{ csrf_token() }}{% endif %}
+      <div class="form-group">
+        <label for="correo">Correo electrónico</label>
+        <div class="input-group mb-3">
+          <input type="email" name="correo" id="correo" class="form-control" placeholder="Correo electrónico" required autocomplete="username" aria-label="Correo electrónico">
+          <div class="input-group-append">
+            <div class="input-group-text"><span class="fas fa-envelope"></span></div>
+          </div>
         </div>
       </div>
 
-      <div class="input-group mb-3">
-        <input type="password" name="contraseña" class="form-control" placeholder="Contraseña" required>
-        <div class="input-group-append">
-          <div class="input-group-text"><span class="fas fa-lock"></span></div>
+      <div class="form-group">
+        <label for="contraseña">Contraseña</label>
+        <div class="input-group mb-3">
+          <input type="password" name="contraseña" id="contraseña" class="form-control" placeholder="Contraseña" required autocomplete="current-password" aria-label="Contraseña">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+              <span class="show-password ml-2" tabindex="0" aria-label="Mostrar u ocultar contraseña" onclick="togglePassword()" onkeypress="if(event.key==='Enter'){togglePassword();}">
+                <i class="fas fa-eye" id="toggleIcon"></i>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -95,6 +108,20 @@
 <script src="{{ url_for('static', filename='adminlte/plugins/jquery/jquery.min.js') }}"></script>
 <script src="{{ url_for('static', filename='adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ url_for('static', filename='adminlte/dist/js/adminlte.min.js') }}"></script>
-
+<script>
+  function togglePassword() {
+    var input = document.getElementById('contraseña');
+    var icon = document.getElementById('toggleIcon');
+    if (input.type === "password") {
+      input.type = "text";
+      icon.classList.remove('fa-eye');
+      icon.classList.add('fa-eye-slash');
+    } else {
+      input.type = "password";
+      icon.classList.remove('fa-eye-slash');
+      icon.classList.add('fa-eye');
+    }
+  }
+</script>
 </body>
 </html>

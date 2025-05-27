@@ -11,7 +11,22 @@
 
 <section class="content">
   <div class="container-fluid">
-    <form method="POST" id="form-venta">
+
+    {# Mensajes flash si existen #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, msg in messages %}
+          <div class="alert alert-{{ 'info' if category == 'message' else category }} alert-dismissible fade show" role="alert">
+            {{ msg }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" id="form-venta" autocomplete="off">
       <div class="row">
         {% for producto in productos %}
         <div class="col-md-6 col-lg-4">
@@ -22,10 +37,20 @@
             <div class="card-body">
               <p class="mb-1"><i class="fas fa-tags text-info"></i> <strong>Categoría:</strong> {{ producto.categoria.nombre }}</p>
               <p class="mb-1"><i class="fas fa-dollar-sign text-success"></i> <strong>Precio:</strong> ${{ producto.precio }}</p>
-              <p class="mb-3"><i class="fas fa-boxes text-warning"></i> <strong>Stock:</strong> {{ producto.stock }}</p>
+              <p class="mb-3">
+                <i class="fas fa-boxes text-warning"></i> <strong>Stock:</strong>
+                {% if producto.stock == 0 %}
+                  <span class="badge badge-danger" title="Sin stock">0</span>
+                {% elif producto.stock <= producto.stock_minimo %}
+                  <span class="badge badge-warning" title="Stock bajo">{{ producto.stock }}</span>
+                {% else %}
+                  <span class="badge badge-success" title="Stock suficiente">{{ producto.stock }}</span>
+                {% endif %}
+              </p>
 
               <div class="form-group form-check">
-                <input class="form-check-input producto-checkbox" type="checkbox" name="productos" value="{{ producto.id }}" id="producto{{ producto.id }}">
+                <input class="form-check-input producto-checkbox" type="checkbox" name="productos" value="{{ producto.id }}" id="producto{{ producto.id }}"
+                  {% if producto.stock == 0 %}disabled{% endif %}>
                 <label class="form-check-label" for="producto{{ producto.id }}">
                   Seleccionar producto
                 </label>
@@ -33,7 +58,11 @@
 
               <div class="form-group">
                 <label for="cantidad_{{ producto.id }}">Cantidad</label>
-                <input type="number" min="1" class="form-control cantidad-input" name="cantidad_{{ producto.id }}" id="cantidad_{{ producto.id }}" placeholder="Ej: 1" disabled>
+                <input type="number" min="1" max="{{ producto.stock }}" class="form-control cantidad-input"
+                  name="cantidad_{{ producto.id }}" id="cantidad_{{ producto.id }}"
+                  placeholder="Ej: 1" disabled
+                  {% if producto.stock == 0 %}readonly{% endif %}>
+                <small class="form-text text-muted">Máximo: {{ producto.stock }}</small>
               </div>
             </div>
           </div>
@@ -41,7 +70,10 @@
         {% endfor %}
       </div>
 
-      <div class="text-right mt-4">
+      <div class="text-right mt-4 d-flex flex-wrap gap-2 justify-content-end">
+        <button type="button" class="btn btn-outline-secondary mr-2" onclick="limpiarSeleccion()" aria-label="Limpiar selección">
+          <i class="fas fa-eraser"></i> Limpiar selección
+        </button>
         <button type="submit" class="btn btn-success">
           <i class="fas fa-check-circle"></i> Registrar venta
         </button>
@@ -53,6 +85,7 @@
   </div>
 </section>
 
+{% block scripts %}
 <script>
   // Habilita/deshabilita el campo cantidad según el checkbox
   document.querySelectorAll('.producto-checkbox').forEach(function(checkbox) {
@@ -68,15 +101,40 @@
   // Validación antes de enviar el formulario
   document.getElementById('form-venta').addEventListener('submit', function(e) {
     let alMenosUno = false;
+    let valido = true;
     document.querySelectorAll('.producto-checkbox').forEach(function(checkbox) {
       if (checkbox.checked) {
         alMenosUno = true;
+        var cantidadInput = document.getElementById('cantidad_' + checkbox.value);
+        var max = parseInt(cantidadInput.getAttribute('max'));
+        var val = parseInt(cantidadInput.value);
+        if (!val || val < 1 || val > max) {
+          valido = false;
+          cantidadInput.classList.add('is-invalid');
+        } else {
+          cantidadInput.classList.remove('is-invalid');
+        }
       }
     });
     if (!alMenosUno) {
       alert('Debes seleccionar al menos un producto.');
       e.preventDefault();
+    } else if (!valido) {
+      alert('Verifica que la cantidad sea válida y no supere el stock disponible.');
+      e.preventDefault();
     }
   });
+
+  // Limpiar selección y cantidades
+  function limpiarSeleccion() {
+    document.querySelectorAll('.producto-checkbox').forEach(function(checkbox) {
+      checkbox.checked = false;
+      var cantidadInput = document.getElementById('cantidad_' + checkbox.value);
+      cantidadInput.disabled = true;
+      cantidadInput.value = '';
+      cantidadInput.classList.remove('is-invalid');
+    });
+  }
 </script>
+{% endblock %}
 {% endblock %}

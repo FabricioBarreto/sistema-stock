@@ -6,45 +6,75 @@
 <div class="container-fluid">
   <h2 class="mb-4"><i class="fas fa-chart-bar"></i> Reporte General de Ventas</h2>
 
+  {# Mensajes flash si existen #}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, msg in messages %}
+        <div class="alert alert-{{ 'info' if category == 'message' else category }} alert-dismissible fade show" role="alert">
+          {{ msg }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
   <div class="row">
     <!-- Top productos -->
     <div class="col-md-6 mb-4">
-      <div class="card">
+      <div class="card h-100">
         <div class="card-header bg-danger text-white">
           <h5 class="card-title mb-0">🔥 Top 5 productos más vendidos</h5>
         </div>
-        <div class="card-body">
-          <canvas id="topProductos" height="200"></canvas>
+        <div class="card-body d-flex justify-content-center align-items-center">
+          <canvas id="topProductos" width="380" height="260" style="max-width:100%;"></canvas>
         </div>
       </div>
     </div>
 
     <!-- Ventas por mes -->
     <div class="col-md-6 mb-4">
-      <div class="card">
+      <div class="card h-100">
         <div class="card-header bg-primary text-white">
           <h5 class="card-title mb-0">📆 Ventas por mes</h5>
         </div>
-        <div class="card-body">
-          <canvas id="ventasMes" height="200"></canvas>
+        <div class="card-body d-flex justify-content-center align-items-center">
+          <canvas id="ventasMes" width="380" height="260" style="max-width:100%;"></canvas>
         </div>
       </div>
     </div>
 
     <!-- Ventas por categoría -->
-    <div class="col-md-12 mb-4">
-      <div class="card">
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
         <div class="card-header bg-warning text-dark">
           <h5 class="card-title mb-0">📦 Ventas por categoría</h5>
         </div>
-        <div class="card-body">
-          <canvas id="ventasCategoria" height="250"></canvas>
+        <div class="card-body d-flex justify-content-center align-items-center">
+          <canvas id="ventasCategoria" width="380" height="260" style="max-width:100%;"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ventas acumuladas -->
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-header bg-success text-white">
+          <h5 class="card-title mb-0">📈 Ventas acumuladas</h5>
+        </div>
+        <div class="card-body d-flex justify-content-center align-items-center">
+          <canvas id="ventasAcumuladas" width="380" height="260" style="max-width:100%;"></canvas>
         </div>
       </div>
     </div>
   </div>
 
-  <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Volver</a>
+  <div class="mt-3 text-right">
+    <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary" aria-label="Volver al panel">
+      <i class="fas fa-arrow-left"></i> Volver
+    </a>
+  </div>
 </div>
 {% endblock %}
 
@@ -69,7 +99,17 @@
         backgroundColor: 'rgba(255, 99, 132, 0.6)'
       }]
     },
-    options: { responsive: true }
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { enabled: true }
+      },
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: 'Unidades' } },
+        x: { title: { display: true, text: 'Producto' } }
+      }
+    }
   });
 
   // Gráfico 2: Ventas por mes
@@ -82,10 +122,23 @@
         data: totalesData,
         fill: false,
         borderColor: 'rgba(54, 162, 235, 1)',
-        tension: 0.4
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        tension: 0.4,
+        pointRadius: 5,
+        pointHoverRadius: 7
       }]
     },
-    options: { responsive: true }
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: true },
+        tooltip: { enabled: true }
+      },
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: 'Monto ($)' } },
+        x: { title: { display: true, text: 'Mes' } }
+      }
+    }
   });
 
   // Gráfico 3: Por categoría
@@ -102,7 +155,49 @@
         ]
       }]
     },
-    options: { responsive: true }
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom' },
+        tooltip: { enabled: true }
+      }
+    }
+  });
+
+  // Gráfico 4: Ventas acumuladas (suma progresiva)
+  const acumuladasData = [];
+  let acumulado = 0;
+  totalesData.forEach(function(val) {
+    acumulado += val;
+    acumuladasData.push(acumulado);
+  });
+
+  new Chart(document.getElementById('ventasAcumuladas'), {
+    type: 'line',
+    data: {
+      labels: mesesData,
+      datasets: [{
+        label: 'Ventas acumuladas ($)',
+        data: acumuladasData,
+        fill: true,
+        borderColor: 'rgba(40,167,69,1)',
+        backgroundColor: 'rgba(40,167,69,0.15)',
+        tension: 0.4,
+        pointRadius: 5,
+        pointHoverRadius: 7
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: true },
+        tooltip: { enabled: true }
+      },
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: 'Monto acumulado ($)' } },
+        x: { title: { display: true, text: 'Mes' } }
+      }
+    }
   });
 </script>
 {% endblock %}

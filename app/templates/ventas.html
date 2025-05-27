@@ -12,16 +12,30 @@
 <section class="content">
   <div class="container-fluid">
 
+    {# Mensajes flash si existen #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, msg in messages %}
+          <div class="alert alert-{{ 'info' if category == 'message' else category }} alert-dismissible fade show" role="alert">
+            {{ msg }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
     <div class="card shadow-sm">
       <div class="card-body table-responsive p-0">
-        <table class="table table-bordered table-hover text-center mb-0">
+        <table class="table table-bordered table-hover text-center mb-0" aria-label="Historial de ventas">
           <thead class="table-dark">
             <tr>
-              <th>ID</th>
-              <th>📅 Fecha</th>
-              <th>👤 Vendedor</th>
-              <th>💵 Total</th>
-              <th>🔎 Detalle</th>
+              <th scope="col">ID</th>
+              <th scope="col">📅 Fecha</th>
+              <th scope="col">👤 Vendedor</th>
+              <th scope="col">💵 Total</th>
+              <th scope="col">🔎 Detalle</th>
             </tr>
           </thead>
           <tbody>
@@ -32,18 +46,35 @@
               <td>{{ venta.vendedor.nombre }}</td>
               <td><strong>${{ '%.2f'|format(venta.total) }}</strong></td>
               <td>
-                <a href="{{ url_for('main.detalle_venta', id=venta.id) }}" class="btn btn-outline-info btn-sm">
+                <a href="{{ url_for('main.detalle_venta', id=venta.id) }}" class="btn btn-outline-info btn-sm" aria-label="Ver detalle de la venta {{ venta.id }}">
                   <i class="fas fa-eye"></i>
                 </a>
               </td>
             </tr>
+            {% else %}
+            <tr>
+              <td colspan="5">No hay ventas registradas.</td>
+            </tr>
             {% endfor %}
           </tbody>
+          {% if ventas and ventas|length > 0 %}
+          <tfoot>
+            <tr class="table-warning">
+              <td colspan="3" class="text-end"><strong>Total general</strong></td>
+              <td colspan="2"><strong>${{ '%.2f'|format(total_general) }}</strong></td>
+            </tr>
+          </tfoot>
+          {% endif %}
         </table>
       </div>
     </div>
 
-    <div class="mt-4">
+    <div class="mt-4 d-flex flex-wrap gap-2">
+      {% if ventas and ventas|length > 0 %}
+      <a href="{{ url_for('main.ventas_pdf') }}" class="btn btn-outline-danger mr-2" target="_blank" aria-label="Exportar historial a PDF">
+        <i class="fas fa-file-pdf"></i> Exportar PDF
+      </a>
+      {% endif %}
       <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">
         <i class="fas fa-arrow-left"></i> Volver al panel
       </a>
