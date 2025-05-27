@@ -35,33 +35,35 @@ Sistema web completo para la gestión de inventario y ventas de una ferretería.
 ---
 
 ## 🧑‍💻 Instalación y ejecución local
-
+---
 1. **Clona el repositorio:**
 
 git clone https://github.com/Juangarciaing/ferreteria-inventario.git
-
+-----
 2. Crea y activa un entorno virtual
 python -m venv venv
 # En Windows:
 venv\Scripts\activate
 # En Linux/macOS:
 source venv/bin/activate
+----
 
 3.Instala las dependencias
 pip install -r requirements.txt
-
+---
 
 4. base de datos en MySQL
  copiala del repositorio
-
+---
 5. Configura la conexión
    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://usuario:contraseña@localhost/ferreteria'
    SECRET_KEY = 'una_clave_secreta'
-
+---
 6.Ejecución del proyecto
 python run.py
-
+---
 📦 Estructura del proyecto
+
 ferreteria-inventario/
 │
 ├── app/
@@ -75,7 +77,7 @@ ferreteria-inventario/
 ├── run.py
 ├── requirements.txt
 └── README.md
-
+---
 📄 Exportación de reportes a PDF
 Para exportar reportes a PDF con WeasyPrint, instala también:
 pip install weasyprint
