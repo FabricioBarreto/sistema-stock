@@ -90,6 +90,7 @@ sudo apt install libpango-1.0-0 libgdk-pixbuf2.0-0 libffi-dev libcairo2
 ![image](https://github.com/user-attachments/assets/259958b5-083c-4395-9f61-a9f7ad7250f0)
 
 🧑‍💻 Autor
+
 Desarrollado por: Juan Camilo Garcia Pomares
 
 Contacto: Juanchogarpo2010@hotmail.com
