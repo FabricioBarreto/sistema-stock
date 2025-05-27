@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Iniciar Sesión | Ferretería App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- AdminLTE & Bootstrap CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='adminlte/plugins/fontawesome-free/css/all.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='adminlte/dist/css/adminlte.min.css') }}">
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #1e90ff, #6a5acd);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-container {
+      max-width: 900px;
+      width: 100%;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: row;
+    }
+
+    .login-image {
+      background: url('{{ url_for("static", filename="img/login-bg.jpg") }}') no-repeat center center;
+      background-size: cover;
+      width: 50%;
+      display: none;
+    }
+
+    .login-form {
+      padding: 40px;
+      width: 100%;
+    }
+
+    @media (min-width: 768px) {
+      .login-image {
+        display: block;
+      }
+
+      .login-form {
+        width: 50%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-container">
+  <div class="login-image"></div>
+
+  <div class="login-form">
+    <h4 class="text-center mb-4"><i class="fas fa-lock text-primary"></i> FerreteríaApp</h4>
+    <p class="text-center text-muted">Inicia sesión para continuar</p>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-danger">
+          {% for msg in messages %}
+            <p>{{ msg }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+      <div class="input-group mb-3">
+        <input type="email" name="correo" class="form-control" placeholder="Correo electrónico" required>
+        <div class="input-group-append">
+          <div class="input-group-text"><span class="fas fa-envelope"></span></div>
+        </div>
+      </div>
+
+      <div class="input-group mb-3">
+        <input type="password" name="contraseña" class="form-control" placeholder="Contraseña" required>
+        <div class="input-group-append">
+          <div class="input-group-text"><span class="fas fa-lock"></span></div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-sign-in-alt"></i> Ingresar</button>
+    </form>
+  </div>
+</div>
+
+<!-- JS -->
+<script src="{{ url_for('static', filename='adminlte/plugins/jquery/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='adminlte/dist/js/adminlte.min.js') }}"></script>
+
+</body>
+</html>

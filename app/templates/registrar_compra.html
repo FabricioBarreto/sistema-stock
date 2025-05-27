@@ -1,0 +1,72 @@
+{% extends 'adminlte.html' %}
+
+{% block title %}Registrar compra{% endblock %}
+
+{% block content %}
+<div class="content-header">
+  <div class="container-fluid">
+    <h2><i class="fas fa-truck-loading"></i> Registrar compra / ingreso de stock</h2>
+  </div>
+</div>
+
+<section class="content">
+  <div class="container-fluid">
+    <form method="POST" class="card card-body bg-light shadow-sm">
+      <!-- Selección del producto -->
+      <div class="form-group">
+        <label for="producto_id"><i class="fas fa-box"></i> Producto:</label>
+        <select name="producto_id" id="producto_id" class="form-control" required onchange="mostrarPrecio()">
+          {% for p in productos %}
+            <option value="{{ p.id }}" data-precio="{{ p.precio }}">{{ p.nombre }} (Stock actual: {{ p.stock }})</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Precio mostrado automáticamente -->
+      <div class="form-group">
+        <label><i class="fas fa-dollar-sign"></i> Precio actual del producto:</label>
+        <input type="text" id="precio_mostrado" class="form-control" readonly>
+      </div>
+
+      <!-- Precio unitario ingresado -->
+      <div class="form-group">
+        <label for="precio_unitario"><i class="fas fa-dollar-sign"></i> Precio unitario (de compra):</label>
+        <input type="number" name="precio_unitario" id="precio_unitario" class="form-control" step="0.01" min="0" required>
+      </div>
+
+      <!-- Cantidad -->
+      <div class="form-group">
+        <label for="cantidad"><i class="fas fa-sort-numeric-up"></i> Cantidad comprada:</label>
+        <input type="number" name="cantidad" id="cantidad" class="form-control" min="1" required>
+      </div>
+
+      <!-- Botones -->
+      <div class="mt-3">
+        <button type="submit" class="btn btn-success">
+          <i class="fas fa-save"></i> Registrar compra
+        </button>
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">
+          <i class="fas fa-arrow-left"></i> Volver
+        </a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function mostrarPrecio() {
+    const select = document.getElementById('producto_id');
+    const precio = select.options[select.selectedIndex].dataset.precio;
+    document.getElementById('precio_mostrado').value = precio;
+  }
+
+  // Mostrar el precio al cargar la página
+  window.addEventListener('DOMContentLoaded', () => {
+    mostrarPrecio();
+  });
+</script>
+{% endblock %}
+
+

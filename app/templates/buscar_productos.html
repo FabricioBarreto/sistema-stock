@@ -1,0 +1,81 @@
+{% extends 'adminlte.html' %}
+
+{% block title %}🔎 Buscar Productos{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+  <h2 class="mb-4 text-primary"><i class="fas fa-search"></i> Buscar productos</h2>
+
+  <!-- Formulario de búsqueda -->
+  <form method="GET" class="card card-body shadow-sm mb-4">
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label for="nombre">Nombre del producto</label>
+        <input type="text" name="nombre" id="nombre" class="form-control" placeholder="Ej: martillo" value="{{ nombre }}">
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <label for="categoria">Categoría</label>
+        <select name="categoria" id="categoria" class="form-control">
+          <option value="">-- Todas las categorías --</option>
+          {% for cat in categorias %}
+            <option value="{{ cat.id }}" {% if categoria_id == cat.id|string %}selected{% endif %}>
+              {{ cat.nombre }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-md-2 mb-3 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">
+          <i class="fas fa-search"></i> Buscar
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Tabla de resultados -->
+  {% if productos %}
+    <div class="card shadow-sm">
+      <div class="card-body table-responsive p-0">
+        <table class="table table-hover table-striped table-bordered mb-0">
+          <thead class="thead-dark">
+            <tr>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Precio</th>
+              <th>Stock</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in productos %}
+            <tr>
+              <td>{{ p.nombre }}</td>
+              <td>{{ p.categoria.nombre }}</td>
+              <td>${{ '%.2f'|format(p.precio) }}</td>
+              <td>
+                {% if p.stock <= p.stock_minimo %}
+                  <span class="badge badge-danger">{{ p.stock }}</span>
+                {% else %}
+                  <span class="badge badge-success">{{ p.stock }}</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% else %}
+    <div class="alert alert-warning mt-3">
+      ⚠ No se encontraron productos que coincidan con la búsqueda.
+    </div>
+  {% endif %}
+
+  <div class="mt-4 text-right">
+    <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">
+      <i class="fas fa-arrow-left"></i> Volver al panel
+    </a>
+  </div>
+</div>
+{% endblock %}

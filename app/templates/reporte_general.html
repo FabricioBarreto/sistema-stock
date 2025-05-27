@@ -1,0 +1,108 @@
+{% extends 'adminlte.html' %}
+
+{% block title %}📊 Reporte General de Ventas{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <h2 class="mb-4"><i class="fas fa-chart-bar"></i> Reporte General de Ventas</h2>
+
+  <div class="row">
+    <!-- Top productos -->
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-header bg-danger text-white">
+          <h5 class="card-title mb-0">🔥 Top 5 productos más vendidos</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="topProductos" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ventas por mes -->
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h5 class="card-title mb-0">📆 Ventas por mes</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="ventasMes" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ventas por categoría -->
+    <div class="col-md-12 mb-4">
+      <div class="card">
+        <div class="card-header bg-warning text-dark">
+          <h5 class="card-title mb-0">📦 Ventas por categoría</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="ventasCategoria" height="250"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Volver</a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const nombresTop = JSON.parse('{{ nombres_top | tojson | safe }}');
+  const cantidadesTop = JSON.parse('{{ cantidades_top | tojson | safe }}');
+  const mesesData = JSON.parse('{{ meses | tojson | safe }}');
+  const totalesData = JSON.parse('{{ totales | tojson | safe }}');
+  const categoriasData = JSON.parse('{{ categorias | tojson | safe }}');
+  const totalesCategoriaData = JSON.parse('{{ totales_categoria | tojson | safe }}');
+
+  // Gráfico 1: Top productos
+  new Chart(document.getElementById('topProductos'), {
+    type: 'bar',
+    data: {
+      labels: nombresTop,
+      datasets: [{
+        label: 'Unidades vendidas',
+        data: cantidadesTop,
+        backgroundColor: 'rgba(255, 99, 132, 0.6)'
+      }]
+    },
+    options: { responsive: true }
+  });
+
+  // Gráfico 2: Ventas por mes
+  new Chart(document.getElementById('ventasMes'), {
+    type: 'line',
+    data: {
+      labels: mesesData,
+      datasets: [{
+        label: 'Ventas ($)',
+        data: totalesData,
+        fill: false,
+        borderColor: 'rgba(54, 162, 235, 1)',
+        tension: 0.4
+      }]
+    },
+    options: { responsive: true }
+  });
+
+  // Gráfico 3: Por categoría
+  new Chart(document.getElementById('ventasCategoria'), {
+    type: 'doughnut',
+    data: {
+      labels: categoriasData,
+      datasets: [{
+        label: 'Total vendido ($)',
+        data: totalesCategoriaData,
+        backgroundColor: [
+          '#36A2EB', '#FFCE56', '#FF6384', '#4BC0C0', '#9966FF',
+          '#FF9F40', '#BDB76B', '#8FBC8F', '#CD5C5C', '#00CED1'
+        ]
+      }]
+    },
+    options: { responsive: true }
+  });
+</script>
+{% endblock %}

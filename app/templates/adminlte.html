@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Inventario Ferretería{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- AdminLTE + Bootstrap + FontAwesome -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='adminlte/plugins/fontawesome-free/css/all.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='adminlte/dist/css/adminlte.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+
+  <style>
+    .content-wrapper {
+      margin-left: 0 !important;  /* eliminar espacio reservado del sidebar */
+    }
+    .main-footer {
+      background-color: #f4f6f9;
+    }
+    .navbar {
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    body {
+      background-color: #f4f6f9;
+    }
+  </style>
+</head>
+
+<body class="hold-transition layout-top-nav">
+<div class="wrapper">
+
+  <!-- NAVBAR -->
+  <nav class="main-header navbar navbar-expand-md navbar-light bg-white">
+    <div class="container">
+      <a href="{{ url_for('main.dashboard') }}" class="navbar-brand">
+        <i class="fas fa-toolbox text-primary"></i>
+        <span class="brand-text font-weight-light">Inventario Ferretería</span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse order-3" id="navbarCollapse">
+        <ul class="navbar-nav ms-auto">
+          {% if current_user.is_authenticated %}
+            <li class="nav-item">
+              <a href="{{ url_for('main.dashboard') }}" class="nav-link">Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ url_for('main.logout') }}" class="nav-link text-danger">
+                <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <div class="content-wrapper">
+    <div class="content pt-4">
+      <div class="container">
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="alert alert-info">
+              {% for msg in messages %}
+                <p>{{ msg }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="main-footer text-center small py-2">
+    <strong>Sistema Inventario Ferretería</strong> &copy; 2025. Todos los derechos reservados.
+  </footer>
+</div>
+
+<!-- SCRIPTS -->
+<script src="{{ url_for('static', filename='adminlte/plugins/jquery/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='adminlte/dist/js/adminlte.min.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

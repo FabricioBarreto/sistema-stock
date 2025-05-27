@@ -1,0 +1,77 @@
+{% extends 'adminlte.html' %}
+
+{% block title %}Panel de {{ usuario.rol|capitalize }}{% endblock %}
+
+{% block content %}
+<div class="content-header">
+  <div class="container-fluid">
+    <h2 class="mb-2">👋 Bienvenido, {{ usuario.nombre }}</h2>
+    <p class="text-muted">Rol: <strong>{{ usuario.rol|capitalize }}</strong></p>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row g-4">
+
+    {% if usuario.rol == 'admin' %}
+      {% set admin_cards = [
+        ('Gestión', [
+          ('main.registrar_usuario', '👥 Registrar nuevo usuario', 'primary', 'user-plus'),
+          ('main.productos', '📦 Gestionar productos', 'secondary', 'boxes'),
+          ('main.buscar_productos', '🔍 Buscar productos', 'dark', 'search'),
+          ('main.alertas_stock', '🚨 Alertas de stock', 'danger', 'exclamation-triangle'),
+          ('main.mi_perfil', '👤 Mi perfil', 'outline-primary', 'user')
+        ]),
+        ('Ventas', [
+          ('main.registrar_venta', '🛒 Registrar venta', 'success', 'shopping-cart'),
+          ('main.ventas', '📋 Historial de ventas', 'dark', 'receipt'),
+          ('main.ventas_por_fecha', '📆 Reporte por fechas', 'warning', 'calendar-day'),
+          ('main.reporte_general', '📊 Gráfico de ventas', 'info', 'chart-bar')
+        ]),
+        ('Usuarios y reportes', [
+          ('main.listar_usuarios', '📋 Ver usuarios', 'outline-primary', 'users'),
+          ('main.ventas_por_usuario', '📈 Ventas por usuario', 'outline-info', 'chart-pie'),
+          ('main.ventas_por_usuario_pdf', '📄 Exportar informe PDF', 'outline-secondary', 'file-pdf')
+        ]),
+        ('Compras', [
+          ('main.registrar_compra', '➕ Registrar compra', 'success', 'truck-loading')
+        ])
+      ] %}
+    {% elif usuario.rol == 'vendedor' %}
+      {% set admin_cards = [
+        ('Acciones', [
+          ('main.registrar_venta', '🛒 Registrar venta', 'success', 'shopping-cart'),
+          ('main.buscar_productos', '🔍 Buscar productos', 'secondary', 'search'),
+          ('main.mis_ventas', '📋 Mis ventas', 'dark', 'clipboard-list'),
+          ('main.alertas_stock', '🚨 Stock bajo', 'danger', 'exclamation-circle'),
+          ('main.mi_perfil', '👤 Mi perfil', 'outline-primary', 'user')
+        ])
+      ] %}
+    {% endif %}
+
+    {% for titulo, items in admin_cards %}
+    <div class="col-md-6 col-xl-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-light">
+          <h5 class="card-title mb-0">{{ titulo }}</h5>
+        </div>
+        <div class="card-body">
+          {% for url, texto, color, icon in items %}
+            <a href="{{ url_for(url) }}" class="btn btn-{{ color }} btn-block mb-2 text-left">
+              <i class="fas fa-{{ icon }} mr-2"></i> {{ texto }}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    <div class="col-md-12">
+      <a href="{{ url_for('main.logout') }}" class="btn btn-outline-danger btn-block mt-3">
+        <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+      </a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

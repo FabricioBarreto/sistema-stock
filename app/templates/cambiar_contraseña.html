@@ -1,0 +1,57 @@
+{% extends 'adminlte.html' %}
+
+{% block title %}🔒 Cambiar Contraseña{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0"><i class="fas fa-key"></i> Cambiar Contraseña</h4>
+        </div>
+
+        <div class="card-body">
+          <!-- Flash messages -->
+          {% with messages = get_flashed_messages() %}
+            {% if messages %}
+              <div class="alert alert-info">
+                {% for msg in messages %}
+                  <p>{{ msg }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endwith %}
+
+          <form method="POST">
+            <div class="form-group">
+              <label for="actual">Contraseña actual</label>
+              <input type="password" id="actual" name="actual" class="form-control" placeholder="Ingresa tu contraseña actual" required>
+            </div>
+
+            <div class="form-group">
+              <label for="nueva">Nueva contraseña</label>
+              <input type="password" id="nueva" name="nueva" class="form-control" placeholder="Nueva contraseña segura" required>
+            </div>
+
+            <div class="form-group">
+              <label for="confirmar">Confirmar nueva contraseña</label>
+              <input type="password" id="confirmar" name="confirmar" class="form-control" placeholder="Confirma la nueva contraseña" required>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+              <a href="{{ url_for('main.mi_perfil') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Cancelar
+              </a>
+              <button type="submit" class="btn btn-success">
+                <i class="fas fa-check"></i> Cambiar contraseña
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

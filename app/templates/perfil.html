@@ -1,0 +1,55 @@
+{% extends 'adminlte.html' %}
+
+{% block title %}Mi Perfil{% endblock %}
+
+{% block content %}
+<div class="content-header">
+  <div class="container-fluid">
+    <h2 class="mb-4"><i class="fas fa-user"></i> Mi Perfil</h2>
+  </div>
+</div>
+
+<section class="content">
+  <div class="container-fluid">
+    <div class="card mx-auto shadow-sm" style="max-width: 600px;">
+      <div class="card-body text-center">
+
+        <!-- Foto de perfil -->
+        <img src="{{ url_for('static', filename='img/default-avatar.png') }}"
+             alt="Foto de perfil"
+             class="rounded-circle mb-3"
+             style="width: 120px; height: 120px; object-fit: cover; border: 2px solid #007bff;">
+
+        <h4 class="mb-2">{{ usuario.nombre }}</h4>
+        <p class="text-muted mb-4">{{ usuario.rol|capitalize }}</p>
+
+        <table class="table table-bordered text-left">
+          <tbody>
+            <tr><th>Cédula</th><td>{{ usuario.cedula }}</td></tr>
+            <tr><th>Correo</th><td>{{ usuario.correo }}</td></tr>
+            <tr><th>Teléfono</th><td>{{ usuario.telefono }}</td></tr>
+            <tr><th>Dirección</th><td>{{ usuario.direccion }}</td></tr>
+            <tr><th>Estado</th><td>{{ usuario.estado|capitalize }}</td></tr>
+          </tbody>
+        </table>
+
+        <div class="d-grid gap-2 mt-4">
+          <a href="{{ url_for('main.editar_perfil') }}" class="btn btn-primary mb-2">
+            <i class="fas fa-edit"></i> Editar perfil
+          </a>
+          <a href="{{ url_for('main.cambiar_contraseña') }}" class="btn btn-warning mb-2">
+            <i class="fas fa-key"></i> Cambiar contraseña
+          </a>
+          <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver al panel
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+
+
