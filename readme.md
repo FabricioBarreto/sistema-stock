@@ -2,7 +2,7 @@
 
 Sistema web completo para la gestión de inventario y ventas de una ferretería. Incluye control de stock, reportes, gráficos, exportación a PDF y un panel de administración con roles diferenciados.
 
----
+----
 
 ## 🚀 Funcionalidades Principales
 
