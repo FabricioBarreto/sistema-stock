@@ -11,7 +11,11 @@ def create_app():
     app = Flask(__name__)
     # Configuración segura usando variables de entorno
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'clave-secreta')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'mysql+pymysql://root:root@localhost/inventario_db')
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+        'DATABASE_URL',
+        f"sqlite:///{os.path.join(basedir, 'inventario.db')}"
+    )
 
     db.init_app(app)
     login_manager.init_app(app)

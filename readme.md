@@ -56,7 +56,7 @@ pip install -r requirements.txt
  copiala del repositorio
 ---
 5. Configura la conexión
-   SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://usuario:contraseña@localhost/ferreteria'
+   SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://usuario:password@localhost/ferreteria'
    SECRET_KEY = 'una_clave_secreta'
 ---
 6.Ejecución del proyecto
