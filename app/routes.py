@@ -42,13 +42,12 @@ def home():
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
-    """Maneja el inicio de sesión de usuarios."""
     if request.method == 'POST':
-        correo = request.form['correo']
-        clave = request.form['contraseña']
-        usuario = Usuario.query.filter_by(correo=correo).first()
+        username = request.form['username']
+        clave = request.form['password']
+        usuario = Usuario.query.filter_by(username=username).first()
 
-        if usuario and check_password_hash(usuario.contraseña, clave):
+        if usuario and check_password_hash(usuario.password, clave):
             if usuario.estado != 'activo':
                 flash('Tu cuenta está inactiva. Contacta al administrador.')
                 return redirect(url_for('main.login'))
@@ -82,15 +81,16 @@ def registrar_usuario():
     if request.method == 'POST':
         nombre = request.form['nombre']
         cedula = request.form['cedula']
-        correo = request.form['correo']
+        username = request.form['username']
+        correo = request.form.get('correo')  # opcional
         telefono = request.form['telefono']
         direccion = request.form['direccion']
-        clave = request.form['contraseña']
+        clave = request.form['password']
         rol = request.form['rol']
 
         # Validaciones de unicidad
-        if Usuario.query.filter_by(correo=correo).first():
-            flash('El correo ya está registrado.')
+        if Usuario.query.filter_by(username=username).first():
+            flash('El nombre de usuario ya está registrado.')
         elif Usuario.query.filter_by(cedula=cedula).first():
             flash('La cédula ya está registrada.')
         else:
@@ -98,10 +98,11 @@ def registrar_usuario():
             nuevo_usuario = Usuario(
                 nombre=nombre,
                 cedula=cedula,
+                username=username,
                 correo=correo,
                 telefono=telefono,
                 direccion=direccion,
-                contraseña=nueva_clave,
+                password=nueva_clave,
                 rol=rol
             )
             db.session.add(nuevo_usuario)
@@ -534,21 +535,21 @@ def editar_perfil():
 
     return render_template('editar_perfil.html', usuario=current_user)
 
-@main.route('/perfil/contraseña', methods=['GET', 'POST'])
+@main.route('/perfil/password', methods=['GET', 'POST'])
 @login_required
-def cambiar_contraseña():
-    """Permite al usuario cambiar su contraseña."""
+def password():
+    """Permite al usuario cambiar su password."""
     if request.method == 'POST':
         actual = request.form['actual']
         nueva = request.form['nueva']
         confirmar = request.form['confirmar']
 
-        if not check_password_hash(current_user.contraseña, actual):
+        if not check_password_hash(current_user.password, actual):
             flash('Contraseña actual incorrecta.')
         elif nueva != confirmar:
             flash('La nueva contraseña no coincide.')
         else:
-            current_user.contraseña = generate_password_hash(nueva)
+            current_user.password = generate_password_hash(nueva)
             db.session.commit()
             flash('Contraseña actualizada exitosamente.')
             return redirect(url_for('main.mi_perfil'))

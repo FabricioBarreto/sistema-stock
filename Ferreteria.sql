@@ -148,7 +148,7 @@ CREATE TABLE `usuarios` (
   `nombre` varchar(60) NOT NULL,
   `cedula` varchar(20) DEFAULT NULL,
   `correo` varchar(80) NOT NULL,
-  `contraseña` varchar(256) DEFAULT NULL,
+  `password` varchar(256) DEFAULT NULL,
   `rol` enum('admin','vendedor') NOT NULL,
   `telefono` varchar(15) DEFAULT NULL,
   `direccion` varchar(100) DEFAULT NULL,
